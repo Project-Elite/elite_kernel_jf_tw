@@ -2,22 +2,22 @@ echo "Make Clean"
 make clean
 echo "Make Mrproper"
 make mrproper
-./build_att_tw.sh
+./build_att_aosp.sh
 echo "Make Clean"
 make clean
 echo "Make Mrproper"
 make mrproper
-./build_spr_tw.sh
+./build_spr_aosp.sh
 echo "Make Clean"
 make clean
 echo "Make Mrproper"
 make mrproper
-./build_tmo_tw.sh
+./build_tmo_aosp.sh
 echo "Make Clean"
 make clean
 echo "Make Mrproper"
 make mrproper
-./build_vzw_tw.sh
+./build_vzw_aosp.sh
 echo "Make Clean"
 make clean
 echo "Make Mrproper"

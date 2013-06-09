@@ -2,25 +2,25 @@
 export KERNELDIR=`readlink -f .`
 export PARENT_DIR=`readlink -f ..`
 export INITRAMFS_DEST=$KERNELDIR/kernel/usr/initramfs
-export INITRAMFS_SOURCE=`readlink -f ..`/Ramdisks/TW_ATT
+export INITRAMFS_SOURCE=`readlink -f ..`/elite_kernel_jf_tw/Ramdisks/TW_ATT
 export CONFIG_AOSP_BUILD=y
-export PACKAGEDIR=$PARENT_DIR/Packages/TW
+export PACKAGEDIR=$KERNELDIR/Packages/TW
+# enable ccache
+export USE_CCACHE=1
 #Enable FIPS mode
 export USE_SEC_FIPS_MODE=true
 export ARCH=arm
-# export CROSS_COMPILE=$PARENT_DIR/linaro4.5/bin/arm-eabi-
-# export CROSS_COMPILE=/home/ktoonsez/kernel/siyah/arm-2011.03/bin/arm-none-eabi-
-# export CROSS_COMPILE=/home/ktoonsez/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
-# export CROSS_COMPILE=/home/ktoonsez/aokp4.2/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-
-export CROSS_COMPILE=$PARENT_DIR/linaro4.7/bin/arm-eabi-
+echo "### VZW KERNEL BUILD ###"
+echo "Setting compiler toolchain..."
+export CROSS_COMPILE=/home/forrest/kernel/android-toolchain-eabi/bin/arm-eabi-
+
 
 time_start=$(date +%s.%N)
 
 echo "Remove old Package Files"
-rm -rf $PACKAGEDIR/*
+rm -rf $PACKAGEDIR/* > /dev/null 2>&1
 
 echo "Setup Package Directory"
-mkdir -p $PACKAGEDIR/system/app
 mkdir -p $PACKAGEDIR/system/lib/modules
 mkdir -p $PACKAGEDIR/system/etc/init.d
 
@@ -28,22 +28,22 @@ echo "Create initramfs dir"
 mkdir -p $INITRAMFS_DEST
 
 echo "Remove old initramfs dir"
-rm -rf $INITRAMFS_DEST/*
+rm -rf $INITRAMFS_DEST/* > /dev/null 2>&1
 
 echo "Copy new initramfs dir"
 cp -R $INITRAMFS_SOURCE/* $INITRAMFS_DEST
 
 echo "chmod initramfs dir"
 chmod -R g-w $INITRAMFS_DEST/*
-rm $(find $INITRAMFS_DEST -name EMPTY_DIRECTORY -print)
+rm $(find $INITRAMFS_DEST -name EMPTY_DIRECTORY -print) > /dev/null 2>&1
 rm -rf $(find $INITRAMFS_DEST -name .git -print)
 
 echo "Remove old zImage"
-rm $PACKAGEDIR/zImage
-rm arch/arm/boot/zImage
+rm $PACKAGEDIR/zImage > /dev/null 2>&1
+rm arch/arm/boot/zImage > /dev/null 2>&1
 
 echo "Make the kernel"
-make VARIANT_DEFCONFIG=jf_att_defconfig SELINUX_DEFCONFIG=jfselinux_defconfig SELINUX_LOG_DEFCONFIG=jfselinux_log_defconfig KT_jf_defconfig
+make VARIANT_DEFCONFIG=jf_att_defconfig SELINUX_DEFCONFIG=jfselinux_defconfig SELINUX_LOG_DEFCONFIG=jfselinux_log_defconfig elite_kernel_defconfig
 
 HOST_CHECK=`uname -n`
 if [ $HOST_CHECK = 'ktoonsez-VirtualBox' ] || [ $HOST_CHECK = 'task650-Underwear' ]; then
@@ -56,10 +56,6 @@ fi;
 
 echo "Copy modules to Package"
 cp -a $(find . -name *.ko -print |grep -v initramfs) $PACKAGEDIR/system/lib/modules/
-cp 00post-init.sh $PACKAGEDIR/system/etc/init.d/00post-init.sh
-cp enable-oc.sh $PACKAGEDIR/system/etc/init.d/enable-oc.sh
-cp /home/ktoonsez/workspace/com.ktoonsez.KTweaker.apk $PACKAGEDIR/system/app/com.ktoonsez.KTweaker.apk
-cp ../Ramdisks/libsqlite.so $PACKAGEDIR/system/lib/libsqlite.so
 
 if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	echo "Copy zImage to Package"
@@ -74,11 +70,10 @@ if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	rm $PACKAGEDIR/boot.img
 	#cp loki_flash $PACKAGEDIR/loki_flash
 	cd $PACKAGEDIR
-	cp -R ../META-INF-SEC ./META-INF
+	cp -R ../META-INF ./META-INF
 	rm ramdisk.gz
 	rm zImage
-	rm ../KT-SGS4-TW-JB-ATT*.zip
-	zip -r ../KT-SGS4-TW-JB-ATT-$curdate.zip .
+	zip -r ../EliteKernel-JFvzw-$curdate.zip .
 	cd $KERNELDIR
 else
 	echo "KERNEL DID NOT BUILD! no zImage exist"
