@@ -73,7 +73,7 @@ if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	cp -R ../META-INF ./META-INF
 	rm ramdisk.gz
 	rm zImage
-	zip -r ../EliteKernel-JFvzw-$curdate.zip .
+	zip -r ../EliteKernel-JFvzw-tw-$curdate.zip .
 	cd $KERNELDIR
 else
 	echo "KERNEL DID NOT BUILD! no zImage exist"
