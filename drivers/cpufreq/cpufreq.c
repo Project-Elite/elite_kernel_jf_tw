@@ -1107,7 +1107,6 @@ unsigned int set_battery_max_level(unsigned int value)
 			vfreq_lock = 0;
 			vfreq_lock_tempOFF = true;
 		}
-		cpufreq_set_limit_defered(USER_MAX_START, value);
 		pr_alert("SET_BATTERY_MAX_LEVEL: %u\n", value);
 	}
 	if (Lscreen_off_scaling_mhz_orig != 0)
@@ -2485,7 +2484,6 @@ static void cpufreq_gov_resume(void)
 	{
 		if (vfreq_lock == 1)
 		{
-=======
 			vfreq_lock = 0;
 			vfreq_lock_tempOFF = true;
 		}
