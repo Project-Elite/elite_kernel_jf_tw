@@ -2557,8 +2557,6 @@ static void cpufreq_gov_suspend(void)
 
 	if (!call_in_progress || Ldisable_som_call_in_progress == 0)
 	{
-		if ((bluetooth_scaling_mhz_active == true && Lscreen_off_scaling_mhz > Lbluetooth_scaling_mhz) || (bluetooth_scaling_mhz_active == false))
-		{
 			if (vfreq_lock == 1)
 			{
 				vfreq_lock = 0;
@@ -2574,7 +2572,6 @@ static void cpufreq_gov_suspend(void)
 		//GPU Control
 		if (Lscreen_off_GPU_mhz > 0)
 			set_max_gpuclk_so(Lscreen_off_GPU_mhz);
-	}
 }
 
 void set_call_in_progress(bool state)
