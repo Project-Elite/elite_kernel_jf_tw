@@ -42,7 +42,7 @@ static sec_charging_current_t charging_current_table[] = {
 	{460,	460,	200,	40*60},
 	{1900,	1600,	200,	40*60},
 	{460,	460,	200,	40*60},
-	{460,	460,	200,	40*60},
+	{1000,	1000,	200,	40*60},
 	{1000,	1000,	200,	40*60},
 	{460,	460,	200,	40*60},
 	{1700,	1600,	200,	40*60},
@@ -273,12 +273,12 @@ static int sec_bat_get_cable_from_extended_cable_type(
 				charge_current = 400;
 				break;
 			case ONLINE_POWER_TYPE_MHL_900:
-				cable_type = POWER_SUPPLY_TYPE_MAINS;
+				cable_type = POWER_SUPPLY_TYPE_MISC;
 				charge_current_max = 700;
 				charge_current = 700;
 				break;
 			case ONLINE_POWER_TYPE_MHL_1500:
-				cable_type = POWER_SUPPLY_TYPE_MAINS;
+				cable_type = POWER_SUPPLY_TYPE_MISC;
 				charge_current_max = 1300;
 				charge_current = 1300;
 				break;
@@ -419,6 +419,34 @@ static const sec_bat_adc_table_data_t temp_table[] = {
 	{41040,	-150},
 	{41510,	-200},
 	{41934,	-250},
+};
+#elif defined(CONFIG_MACH_JACTIVE_ATT)
+static const sec_bat_adc_table_data_t temp_table[] = {
+	{27039,	700},
+	{27264,	670},
+	{27435,	650},
+	{27645,	630},
+	{27982,	600},
+	{28561,	550},
+	{29202,	500},
+	{29946,	450},
+	{30318,	430},
+	{30845,	400},
+	{31630,	350},
+	{32871,	300},
+	{33975,	250},
+	{35091,	200},
+	{36174,	150},
+	{37243,	100},
+	{38198,	50},
+	{39157,	0},
+	{39676,	-30},
+	{39974,	-50},
+	{40690,	-100},
+	{41183,	-150},
+	{41685,	-200},
+	{42089,	-250},
+	{42370,	-300},
 };
 #else
 static const sec_bat_adc_table_data_t temp_table[] = {

@@ -260,7 +260,9 @@ void cpu_idle(void)
 			if (cpu_is_offline(smp_processor_id()))
 				cpu_die();
 #endif
-
+#ifdef CONFIG_ZRAM_FOR_ANDROID
+			could_cswap();
+#endif /* CONFIG_ZRAM_FOR_ANDROID */
 			/*
 			 * We need to disable interrupts here
 			 * to ensure we don't miss a wakeup call.
