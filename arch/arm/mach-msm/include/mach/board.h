@@ -15,6 +15,7 @@
  *
  */
 
+#ifndef __ASM_ARCH_MSM_BOARD_H
 #define __ASM_ARCH_MSM_BOARD_H
 
 #include <linux/types.h>
