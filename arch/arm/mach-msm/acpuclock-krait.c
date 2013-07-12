@@ -643,9 +643,8 @@ static void __cpuinit hfpll_init(struct scalable *sc,
 		writel_relaxed(drv.hfpll_data->droop_val,
 			       sc->hfpll_base + drv.hfpll_data->droop_offset);
 
-	/* Set an initial rate and enable the PLL. */
+	/* Set an initial PLL rate. */
 	hfpll_set_rate(sc, tgt_s);
-	hfpll_enable(sc, false);
 }
 
 static int __cpuinit rpm_regulator_init(struct scalable *sc, enum vregs vreg,
@@ -816,7 +815,9 @@ static int __cpuinit init_clock_sources(struct scalable *sc,
 	regval &= ~(0x3 << 6);
 	set_l2_indirect_reg(sc->l2cpmr_iaddr, regval);
 
-	/* Switch to the target clock source. */
+	/* Enable and switch to the target clock source. */
+	if (tgt_s->src == HFPLL)
+		hfpll_enable(sc, false);
 	set_pri_clk_src(sc, tgt_s->pri_src_sel);
 	sc->cur_speed = tgt_s;
 
@@ -952,10 +953,10 @@ static void __init cpufreq_table_init(void)
 		for (i = 0; drv.acpu_freq_tbl[i].speed.khz != 0
 				&& freq_cnt < ARRAY_SIZE(*freq_table); i++) {
 			if (drv.acpu_freq_tbl[i].use_for_scaling) {
-#ifdef CONFIG_SEC_FACTORY 
+#if 0
 				// if factory_condition, set the core freq limit.
 				//QMCK
-				if (console_set_on_cmdline && drv.acpu_freq_tbl[i].speed.khz > 1000000) {
+				if (console_set_on_cmdline && drv.acpu_freq_tbl[i].speed.khz > 1242000) {
 					if(console_batt_stat == 1) {
 						continue;
 					}
