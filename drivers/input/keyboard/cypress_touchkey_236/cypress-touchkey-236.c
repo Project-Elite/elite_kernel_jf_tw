@@ -63,11 +63,12 @@
 #define CYPRESS_SLEEP		0X80
 
 #define CYPRESS_FW_ID_REG	0X05
+/*
 #define CYPRESS_55_IC_MASK	0x20
 #define CYPRESS_65_IC_MASK	0x04
+*/
 
-u32 ic_fw_id;
-EXPORT_SYMBOL(ic_fw_id);
+static u32 fw_id;
 
 #if defined(CONFIG_GLOVE_TOUCH)
 static int glove_value;
@@ -545,7 +546,7 @@ static void touchkey_ta_cb(struct touchkey_callbacks *cb, bool ta_status)
 			container_of(cb, struct cypress_touchkey_info, callbacks);
 	struct i2c_client *client = info->client;
 
-	dev_info(&client->dev, "%s : 0x%02x\n", __func__, ic_fw_id);
+	dev_info(&client->dev, "%s : 0x%02x\n", __func__, fw_id);
 
 	info->charging_mode = ta_status;
 
@@ -556,11 +557,11 @@ static void touchkey_ta_cb(struct touchkey_callbacks *cb, bool ta_status)
 		return;
 		}
 
-	if (ic_fw_id & CYPRESS_55_IC_MASK) {
+	if (fw_id & CYPRESS_55_IC_MASK) {
 		printk(KERN_INFO "[Touchkey] IC id 20055\n");
 		touchkey_ta_setting(info);
 		}
-	else if (ic_fw_id & CYPRESS_65_IC_MASK) {
+	else if (fw_id & CYPRESS_65_IC_MASK) {
 		printk(KERN_INFO "[Touchkey] IC id 20065\n");
 		touchkey_ta_setting(info);
 		}
@@ -588,9 +589,9 @@ static void cypress_touchkey_glove_work(struct work_struct *work)
 		return;
 	}
 #endif
-	if(ic_fw_id & CYPRESS_55_IC_MASK)
+	if(fw_id & CYPRESS_55_IC_MASK)
 		printk(KERN_INFO "[Touchkey] IC id 20055\n");
-	else if (ic_fw_id & CYPRESS_65_IC_MASK)
+	else if (fw_id & CYPRESS_65_IC_MASK)
 		printk(KERN_INFO "[Touchkey] IC id 20065\n");
 	else {
 		printk(KERN_INFO "[Touchkey] IC id 20045\n");
@@ -683,9 +684,9 @@ void touchkey_flip_cover(int value)
 		return ;
 		}
 
-	if(ic_fw_id & CYPRESS_65_IC_MASK)
+	if(fw_id & CYPRESS_65_IC_MASK)
 		printk(KERN_INFO "[Touchkey] IC id 20065\n");
-	else if (ic_fw_id & CYPRESS_55_IC_MASK) {
+	else if (fw_id & CYPRESS_55_IC_MASK) {
 		printk(KERN_INFO "[Touchkey] IC id 20055\n");
 		printk(KERN_INFO "[TouchKey] flipmode does not support!\n");
 		return;
@@ -959,11 +960,11 @@ static ssize_t touch_update_write(struct device *dev,
 
 	disable_irq(info->irq);
 
-	if (ic_fw_id & CYPRESS_55_IC_MASK) {
+	if (fw_id & CYPRESS_55_IC_MASK) {
 		printk(KERN_INFO "[Touchkey] IC id 20055\n");
 		return 1;
 		}
-	else if (ic_fw_id & CYPRESS_65_IC_MASK)
+	else if (fw_id & CYPRESS_65_IC_MASK)
 		printk(KERN_INFO "[Touchkey] IC id 20065\n");
 	else {
 		printk(KERN_INFO "[Touchkey] IC id 20045\n");
@@ -1563,10 +1564,10 @@ static int __devinit cypress_touchkey_probe(struct i2c_client *client,
 	ic_fw_ver = data[1];
 	printk(KERN_INFO "[Touchkey] IC FW Version: 0x%02x\n", ic_fw_ver);
 
-	ic_fw_id = data[5];
-	printk(KERN_INFO "[Touchkey] IC ID Version: 0x%02x\n", ic_fw_id);
+	fw_id = data[5];
+	printk(KERN_INFO "[Touchkey] IC ID Version: 0x%02x\n", fw_id);
 
-	if ((ic_fw_id & CYPRESS_65_IC_MASK) && (ic_fw_ver >= BASE_FW_VERSION) && (ic_fw_ver < BIN_FW_VERSION)){
+	if ((fw_id & CYPRESS_65_IC_MASK) && (ic_fw_ver >= BASE_FW_VERSION) && (ic_fw_ver < BIN_FW_VERSION)){
 		printk(KERN_INFO "[Touchkey] IC id 20065\n");
 		printk(KERN_INFO "[TouchKey] touchkey_update Start!!\n");
 		disable_irq(client->irq);
