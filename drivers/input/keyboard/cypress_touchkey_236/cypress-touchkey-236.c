@@ -63,10 +63,8 @@
 #define CYPRESS_SLEEP		0X80
 
 #define CYPRESS_FW_ID_REG	0X05
-/*
 #define CYPRESS_55_IC_MASK	0x20
 #define CYPRESS_65_IC_MASK	0x04
-*/
 
 static u32 fw_id;
 
@@ -916,14 +914,15 @@ static ssize_t touchkey_firm_status_show(struct device *dev,
 {
 	struct cypress_touchkey_info *info = dev_get_drvdata(dev);
 	int count = 0;
+	char buff[16] = {0};
 	dev_info(&info->client->dev, "[TouchKey] touchkey_update_status: %d\n",
 						info->touchkey_update_status);
 	if (info->touchkey_update_status == 0)
-		count = snprintf(buf, 20, "PASS\n");
+		count = snprintf(buff, sizeof(buff), "PASS\n");
 	else if (info->touchkey_update_status == 1)
-		count = snprintf(buf, 20, "Downloading\n");
+		count = snprintf(buff, sizeof(buff), "Downloading\n");
 	else if (info->touchkey_update_status == -1)
-		count = snprintf(buf, 20, "Fail\n");
+		count = snprintf(buff, sizeof(buff), "Fail\n");
 	return count;
 }
 
@@ -932,15 +931,16 @@ static ssize_t touch_update_read(struct device *dev,
 {
 	struct cypress_touchkey_info *info = dev_get_drvdata(dev);
 	int count = 0;
+	char buff[16] = {0};
 
 	dev_info(&info->client->dev, "[TouchKey] touchkey_update_read: %d\n",
 						info->touchkey_update_status);
 	if (info->touchkey_update_status == 0)
-		count = snprintf(buf, 20, "PASS\n");
+		count = snprintf(buff, sizeof(buff), "PASS\n");
 	else if (info->touchkey_update_status == 1)
-		count = snprintf(buf, 20, "Downloading\n");
+		count = snprintf(buff, sizeof(buff), "Downloading\n");
 	else if (info->touchkey_update_status == -1)
-		count = snprintf(buf, 20, "Fail\n");
+		count = snprintf(buff, sizeof(buff), "Fail\n");
 	return count;
 }
 
@@ -1498,14 +1498,15 @@ static int __devinit cypress_touchkey_probe(struct i2c_client *client,
 #if defined(CONFIG_MACH_JF_DCM)
 	msleep(50);
 #endif
+	ret = i2c_touchkey_read(info->client, KEYCODE_REG, data, 6);
 
-	if (get_lcd_attached() == 0) {
-		printk(KERN_ERR "[TouchKey] %s %d Device wasn't connected to board \n",
+#ifdef CONFIG_TOUCHSCREEN_FACTORY_PLATFORM
+	if (ret < 0) {
+		printk(KERN_ERR "[TouchKey] %s %d i2c transfer error\n",
 			__func__, __LINE__);
 		goto err_i2c_check;
 		}
-
-	ret = i2c_touchkey_read(info->client, KEYCODE_REG, data, 6);
+#else
 	if (ret < 0) {
 		disable_irq(client->irq);
 		if (ISSP_main() == 0) {
@@ -1518,6 +1519,7 @@ static int __devinit cypress_touchkey_probe(struct i2c_client *client,
 			goto err_i2c_check;
 			}
 		}
+#endif
 
 #ifdef TSP_BOOSTER
 	cypress_init_dvfs(info);
@@ -1578,10 +1580,6 @@ static int __devinit cypress_touchkey_probe(struct i2c_client *client,
 				enable_irq(client->irq);
 				break;
 			}
-			info->power_onoff(0);
-			msleep(70);
-			info->power_onoff(1);
-			msleep(50);
 			dev_err(&client->dev,
 				"[TouchKey] Touchkey_update failed... retry...\n");
 		}
@@ -1600,40 +1598,7 @@ static int __devinit cypress_touchkey_probe(struct i2c_client *client,
 		dev_info(&client->dev,
 			"[TouchKey] %s : FW Ver 0x%02x\n", __func__, ic_fw_ver);
 		}
-	else if ((ic_fw_id & CYPRESS_55_IC_MASK) && (ic_fw_ver < BIN_FW_VERSION_20055)){
-		printk(KERN_INFO "[Touchkey] IC id 20055\n");
-		printk(KERN_INFO "[TouchKey] touchkey_update Start!!\n");
-		disable_irq(client->irq);
-
-		while (retry--) {
-			if (ISSP_main() == 0) {
-				dev_info(&client->dev, "[TouchKey] Update success!\n");
-				enable_irq(client->irq);
-				break;
-			}
-			info->power_onoff(0);
-			msleep(70);
-			info->power_onoff(1);
-			msleep(50);
-			dev_err(&client->dev,
-				"[TouchKey] Touchkey_update failed... retry...\n");
-		}
-
-		if (retry <= 0) {
-			if (info->pdata->gpio_led_en)
-				cypress_touchkey_con_hw(info, false);
-			msleep(300);
-			dev_err(&client->dev, "[TouchKey]Touchkey_update fail\n");
-		}
-
-		msleep(500);
-
-		ic_fw_ver = i2c_smbus_read_byte_data(info->client,
-				CYPRESS_FW_VER);
-		dev_info(&client->dev,
-			"[TouchKey] %s : FW Ver 0x%02x\n", __func__, ic_fw_ver);
-
-	} else {
+	else {
 		dev_info(&client->dev, "[TouchKey] FW update does not need!\n");
 	}
 
