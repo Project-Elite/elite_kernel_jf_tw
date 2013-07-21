@@ -809,40 +809,6 @@ static int mipi_dsi_power_tft(int enable)
 #endif
 
 #if defined(CONFIG_MACH_JACTIVE_EUR)
-		if( system_rev >= 15 ) // rev0.5 + 10
-		{
-			msleep ( 10 );
-			rc = regulator_set_optimum_mode(reg_L16, 100);
-			if (rc < 0) {
-				pr_err("set_optimum_mode L16 failed, rc=%d\n", rc);
-				return -EINVAL;
-			}
-			
-			rc = regulator_disable(reg_L16);
-			if (rc) {
-				pr_err("disable reg_L16 failed, rc=%d\n", rc);
-				return -ENODEV;
-			}
-		}
-#elif defined(CONFIG_MACH_JACTIVE_ATT)
-		if( system_rev >= 11 ) // rev0.3 + 8
-		{
-			msleep ( 10 );
-			rc = regulator_set_optimum_mode(reg_L16, 100);
-			if (rc < 0) {
-				pr_err("set_optimum_mode L16 failed, rc=%d\n", rc);
-				return -EINVAL;
-			}
-			
-			rc = regulator_disable(reg_L16);
-			if (rc) {
-				pr_err("disable reg_L16 failed, rc=%d\n", rc);
-				return -ENODEV;
-			}
-		}
-#endif
-
-#if defined(CONFIG_MACH_JACTIVE_EUR)
 		rc = regulator_set_optimum_mode(reg_LVS1, 100);
 		if (rc < 0) {
 			pr_err("set_optimum_mode LVS1 failed, rc=%d\n", rc);

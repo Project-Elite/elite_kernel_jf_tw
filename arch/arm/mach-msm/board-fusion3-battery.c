@@ -325,14 +325,6 @@ static bool sec_bat_check_cable_result_callback(
 
 	if(system_rev >= 0x8)
 	{
-#ifdef CONFIG_SAMSUNG_BATTERY_FACTORY
-		pr_info("%s set ldo on\n", __func__);
-		l29 = regulator_get(NULL, "8921_l29");
-		if(l29 > 0)
-		{
-			regulator_enable(l29);
-		}
-#else
 		if (current_cable_type == POWER_SUPPLY_TYPE_BATTERY)
 		{
 			pr_info("%s set ldo off\n", __func__);
@@ -351,7 +343,6 @@ static bool sec_bat_check_cable_result_callback(
 				regulator_enable(l29);
 			}
 		}
-#endif
 	}
 	return true;
 }
@@ -502,11 +493,7 @@ static int polling_time_table[] = {
 	30,	/* CHARGING */
 	30,	/* DISCHARGING */
 	30,	/* NOT_CHARGING */
-#if defined(CONFIG_MACH_JACTIVE_EUR)
-	5 * 60,	/* SLEEP */
-#else
 	60 * 60,	/* SLEEP */
-#endif
 };
 
 #if defined(CONFIG_MACH_JF_ATT) || defined(CONFIG_MACH_JF_TMO) || \
@@ -668,12 +655,12 @@ sec_battery_platform_data_t sec_battery_pdata = {
 	.temp_low_threshold_event = -30,
 	.temp_low_recovery_event = 0,
 
-	.temp_high_threshold_normal = 470,
-	.temp_high_recovery_normal = 400,
+	.temp_high_threshold_normal = 480,
+	.temp_high_recovery_normal = 430,
 	.temp_low_threshold_normal = -30,
 	.temp_low_recovery_normal = 0,
 
-	.temp_high_threshold_lpm = 470,
+	.temp_high_threshold_lpm = 480,
 	.temp_high_recovery_lpm = 430,
 	.temp_low_threshold_lpm = -30,
 	.temp_low_recovery_lpm = 0,
