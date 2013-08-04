@@ -239,10 +239,6 @@ int send_instruction(struct ssp_data *data, u8 uInst,
 	}
 	
 	//GPS activated/not activated hook
-	if (uInst == ADD_SENSOR && uSensorType == GEOMAGNETIC_SENSOR)
-		set_gps_status(true); //pr_alert("KT GPS ENABLE: %d-%d\n", uInst, uSensorType);
-	else if (uInst == REMOVE_SENSOR && uSensorType == GEOMAGNETIC_SENSOR)
-		set_gps_status(false); //pr_alert("KT GPS DISABLE: %d-%d\n", uInst, uSensorType);
 
 	data->uInstFailCnt = 0;
 	ssp_dbg("[SSP]: %s - Inst = 0x%x, Sensor Type = 0x%x, data = %u\n",
