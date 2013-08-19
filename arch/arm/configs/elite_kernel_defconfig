@@ -3412,6 +3412,7 @@ CONFIG_NTFS_FS=m
 # CONFIG_NTFS_DEBUG is not set
 # CONFIG_NTFS_RW is not set
 CONFIG_DYNAMIC_FSYNC=y
+CONFIG_NLS_UTF8=y
 
 #
 # Pseudo filesystems
