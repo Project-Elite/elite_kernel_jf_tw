@@ -23,6 +23,7 @@ rm -rf $PACKAGEDIR/* > /dev/null 2>&1
 echo "Setup Package Directory"
 mkdir -p $PACKAGEDIR/system/lib/modules
 mkdir -p $PACKAGEDIR/system/etc/init.d
+mkdir -p $PACKAGEDIR/system/bin/
 
 echo "Create initramfs dir"
 mkdir -p $INITRAMFS_DEST
@@ -56,9 +57,7 @@ fi;
 
 echo "Copy modules to Package"
 cp -a $(find . -name *.ko -print |grep -v initramfs) $PACKAGEDIR/system/lib/modules/
-cp Packages/exfat_core.ko $PACKAGEDIR/system/lib/modules/exfat_core.ko
-cp Packages/exfat_core.ko $PACKAGEDIR/system/lib/modules/exfat_fs.ko
-cp Packages/md4.ko $PACKAGEDIR/system/lib/modules/md4.ko
+cp Packages/thermald $PACKAGEDIR/system/bin/thermald
 
 if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	echo "Copy zImage to Package"
